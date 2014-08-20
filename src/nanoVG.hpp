@@ -26,7 +26,7 @@ namespace ofx { namespace nvg {
         
         ~Context()
         {
-                nvgDeleteInternal( get() );
+                //nvgDeleteInternal( get() );
         }
         
         inline NVGcontext* get() { return mCtx.get(); }

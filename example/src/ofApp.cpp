@@ -7,6 +7,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofSetFrameRate( 60 );
     mNanoVG = std::shared_ptr<ofx::nvg::Context>( new ofx::nvg::Context( true, true ) );
 }
 

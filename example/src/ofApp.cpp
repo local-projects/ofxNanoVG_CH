@@ -1,9 +1,13 @@
 #include "ofApp.h"
-#include "nanovg_gl2.hpp"
+#include <memory>
+#include "nanoVG.hpp"
+
+
+//using namespace ofx::nvg;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+    mNanoVG = std::shared_ptr<ofx::nvg::Context>( new ofx::nvg::Context( true, true ) );
 }
 
 //--------------------------------------------------------------
@@ -13,7 +17,16 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    float time = ofGetElapsedTimef();
+    float r = 200.0f;
+    
+    mNanoVG->beginFrame(1024, 768, 1);
+    mNanoVG->beginPath();
+    mNanoVG->arc( 500, 500, r, -M_PI_2, fmodf(time, M_PI * 2.0f) - M_PI_2, NVG_CW );
+    mNanoVG->strokeColor( ofFloatColor( .3, .3, .3 , 1 ) );
+    mNanoVG->strokeWidth( 5 );
+    mNanoVG->stroke();
+    mNanoVG->endFrame();
 }
 
 //--------------------------------------------------------------

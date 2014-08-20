@@ -2,6 +2,13 @@
 
 #include "ofMain.h"
 
+namespace ofx{
+    namespace nvg{
+        class Context;
+    }
+}
+
+
 class ofApp : public ofBaseApp{
 	public:
 		void setup();
@@ -17,4 +24,8 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+    
+protected:
+    //std::shared_ptr<Context> mNanoVG;
+    std::shared_ptr<ofx::nvg::Context> mNanoVG;
 };

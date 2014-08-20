@@ -1,16 +1,10 @@
 #pragma once
 
+#define NANOVG_GL2_IMPLEMENTATION 1
 #include "nanovg.h"
+#include "nanovg_gl.h"
 
 #include "ofMain.h"
-//#include "cinder/MatrixAffine2.h"
-//#include "cinder/ofVec2f.h"
-//#include "cinder/Rect.h"
-//#include "cinder/Color.h"
-//#include "cinder/PolyLine.h"
-//#include "cinder/Shape2d.h"
-//#include "cinder/svg/Svg.h"
-
 #include <memory>
 #include <string>
 
@@ -18,9 +12,21 @@ namespace ofx { namespace nvg {
     
     class Context {
     public:
-        using BackingCtx = std::auto_ptr<NVGcontext, std::function<void(NVGcontext*)>>;
+        Context( bool antiAlias = true, bool stencilStrokes = false )
+        {
+            int flags = (antiAlias ? NVG_ANTIALIAS : 0 ) |
+                        (stencilStrokes ? NVG_STENCIL_STROKES : 0 );
         
-        Context(BackingCtx&& ctx) : mCtx{ std::move(ctx) } {
+            //mCtx = std::make_shared<NVGcontext>( nvgCreateGL2( flags ) );
+            cout << "creating gl 2 context" << endl;
+            mCtx = std::shared_ptr<NVGcontext>( nvgCreateGL2( flags ) );
+            
+            cout << "mCtx" << mCtx << endl;
+        }
+        
+        ~Context()
+        {
+                nvgDeleteInternal( get() );
         }
         
         inline NVGcontext* get() { return mCtx.get(); }
@@ -48,7 +54,7 @@ namespace ofx { namespace nvg {
         inline void strokeColor(const NVGcolor& color) {
             nvgStrokeColor(get(), color);
         }
-        inline void strokeColor(const ColorAf& color) {
+        inline void strokeColor(const ofFloatColor& color) {
             strokeColor(reinterpret_cast<const NVGcolor&>(color));
         }
         inline void strokePaint(const NVGpaint& paint) {
@@ -75,7 +81,7 @@ namespace ofx { namespace nvg {
             nvgResetTransform(get());
         }
         inline void transform(const ofMatrix3x3& mtx) {
-            nvgTransform(get(), mtx[0], mtx[1], mtx[2], mtx[3], mtx[4], mtx[5]);
+            nvgTransform(get(), mtx.a, mtx.b, mtx.c, mtx.d, mtx.e, mtx.f);
         }
         inline void setTransform(const ofMatrix3x3& mtx) {
             resetTransform();
@@ -84,14 +90,14 @@ namespace ofx { namespace nvg {
         inline void translate(float x, float y) {
             nvgTranslate(get(), x, y);
         }
-        inline void translate(const Vec2f& translation) {
+        inline void translate(const ofVec2f& translation) {
             translate(translation.x, translation.y);
         }
         inline void rotate(float angle) { nvgRotate(get(), angle); }
         inline void skewX(float angle) { nvgSkewX(get(), angle); }
         inline void skewY(float angle) { nvgSkewY(get(), angle); }
         inline void scale(float x, float y) { nvgScale(get(), x, y); }
-        inline void scale(const Vec2f& s) { scale(s.x, s.y); }
+        inline void scale(const ofVec2f& s) { scale(s.x, s.y); }
         
         ofMatrix3x3 currentTransform() {
             ofMatrix3x3 xform;
@@ -131,25 +137,25 @@ namespace ofx { namespace nvg {
         
         inline void beginPath() { nvgBeginPath(get()); }
         inline void moveTo(float x, float y) { nvgMoveTo(get(), x, y); }
-        inline void moveTo(const Vec2f& p) { moveTo(p.x, p.y); }
+        inline void moveTo(const ofVec2f& p) { moveTo(p.x, p.y); }
         inline void lineTo(float x, float y) { nvgLineTo(get(), x, y); }
-        inline void lineTo(const Vec2f& p) { lineTo(p.x, p.y); }
+        inline void lineTo(const ofVec2f& p) { lineTo(p.x, p.y); }
         inline void quadTo(float cx, float cy, float x, float y) {
             nvgQuadTo(get(), cx, cy, x, y);
         }
-        inline void quadTo(const Vec2f& p1, const Vec2f& p2) {
+        inline void quadTo(const ofVec2f& p1, const ofVec2f& p2) {
             quadTo(p1.x, p1.y, p2.x, p2.y);
         }
         inline void bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
             nvgBezierTo(get(), c1x, c1y, c2x, c2y, x, y);
         }
-        inline void bezierTo(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3) {
+        inline void bezierTo(const ofVec2f& p1, const ofVec2f& p2, const ofVec2f& p3) {
             bezierTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
         }
         inline void arcTo(float x1, float y1, float x2, float y2, float radius) {
             nvgArcTo(get(), x1, y1, x2, y2, radius);
         }
-        inline void arcTo(const Vec2f& p1, const Vec2f& p2, float radius) {
+        inline void arcTo(const ofVec2f& p1, const ofVec2f& p2, float radius) {
             arcTo(p1.x, p1.y, p2.x, p2.y, radius);
         }
         inline void closePath() { nvgClosePath(get()); }
@@ -157,7 +163,7 @@ namespace ofx { namespace nvg {
         inline void arc(float cx, float cy, float r, float a0, float a1, int dir) {
             nvgArc(get(), cx, cy, r, a0, a1, dir);
         }
-        inline void arc(const Vec2f &center, float r, float a0, float a1, int dir) {
+        inline void arc(const ofVec2f &center, float r, float a0, float a1, int dir) {
             arc(center.x, center.y, r, a0, a1, dir);
         }
         inline void rect(float x, float y, float w, float h) {
@@ -170,18 +176,18 @@ namespace ofx { namespace nvg {
             nvgRoundedRect(get(), x, y, w, h, r);
         }
         inline void roundedRect(const ofVec4f& rect, float r) {
-            roundedRect(r[0], r[2], r[3], r[4], r);
+            roundedRect(rect[0], rect[1], rect[2], rect[3], r);
         }
         inline void ellipse(float cx, float cy, float rx, float ry) {
             nvgEllipse(get(), cx, cy, rx, ry);
         }
-        inline void ellipse(const Vec2f& center, float rx, float ry) {
+        inline void ellipse(const ofVec2f& center, float rx, float ry) {
             ellipse(center.x, center.y, rx, ry);
         }
         inline void circle(float cx, float cy, float r) {
             nvgCircle(get(), cx, cy, r);
         }
-        inline void circle(const Vec2f& center, float radius) {
+        inline void circle(const ofVec2f& center, float radius) {
             circle(center.x, center.x, radius);
         }
         
@@ -194,7 +200,7 @@ namespace ofx { namespace nvg {
         //void shape2d(const Shape2d& shape);
         
     private:
-        BackingCtx mCtx;
+        std::shared_ptr<NVGcontext> mCtx;
     };
     
 }} // cinder::nvg

@@ -30,4 +30,11 @@ protected:
     std::shared_ptr<ofx::nvg::Context> mNanoVG;
     std::vector<ofVec2f> mPoints;
     std::vector<ofVec2f> mControlPoints;
+    
+    ofVec2f pts[5]; // we now need to keep track of the four points of a Bezier segment and the first control point of the next segment
+    uint ctr;
+    
+    std::vector<ofVec2f> bezierPoints;
+    uint bezierPathCounter;
+    uint drawnBezierPathsCounter;
 };

@@ -32,12 +32,10 @@ void ofApp::update(){
 void ofApp::draw(){
     
     mNanoVG->beginFrame(450, 450, 1);
-    mNanoVG->lineCap( 1 );
-    mNanoVG->strokeColor( ofFloatColor( 1, 1, 1 ,1 ) );
-    mNanoVG->strokeWidth( 5 );
     mNanoVG->beginPath();
     
     while ( drawnBezierPathsCounter < bezierPathCounter ) {
+        cout << drawnBezierPathsCounter << " < " << bezierPathCounter << " total " << bezierPoints.size()  << "  " << (drawnBezierPathsCounter * 4 + 3) << endl;
         uint startIndex = drawnBezierPathsCounter * 4;
         mNanoVG->moveTo( bezierPoints[ startIndex + 0 ] );
         mNanoVG->bezierTo(  bezierPoints[ startIndex + 1 ],
@@ -45,8 +43,12 @@ void ofApp::draw(){
                             bezierPoints[ startIndex + 3 ]);
         drawnBezierPathsCounter++;
     }
-    //mNanoVG->closePath();
     
+    mNanoVG->lineCap( 1 );
+    mNanoVG->strokeColor( ofFloatColor( 1, 1, 1 ,1 ) );
+    mNanoVG->strokeWidth( 5 );
+    //mNanoVG->fillColor( ofFloatColor( 1, 0, 0, 1 ) );
+    //mNanoVG->fill();
     mNanoVG->stroke();
     mNanoVG->endFrame();
 }

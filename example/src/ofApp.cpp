@@ -8,7 +8,12 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate( 60 );
-    mNanoVG = std::shared_ptr<ofx::nvg::Context>( new ofx::nvg::Context( true, true ) );
+    mNanoVG = std::shared_ptr<ofx::nvg::Context>( new ofx::nvg::Context( true, false ) );
+    for( int i = 0; i < 100; i++ ) {
+        mPoints.push_back( ofVec2f( ofRandom( 1024 ), ofRandom( 768 ) ) );
+        mControlPoints.push_back( ofVec2f( ofRandom( 1024 ), ofRandom( 768 ) ) );
+        cout << mPoints[ i ] << endl;
+    }
 }
 
 //--------------------------------------------------------------
@@ -18,14 +23,20 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    float time = ofGetElapsedTimef();
-    float r = 200.0f;
-    
+    ofBackground( 0 );
     mNanoVG->beginFrame(1024, 768, 1);
-    mNanoVG->beginPath();
-    mNanoVG->arc( 500, 500, r, -M_PI_2, fmodf(time, M_PI * 2.0f) - M_PI_2, NVG_CW );
-    mNanoVG->strokeColor( ofFloatColor( .3, .3, .3 , 1 ) );
+    mNanoVG->lineCap( 1 );
+    mNanoVG->strokeColor( ofFloatColor( 1, 1, 1 , 1 ) );
     mNanoVG->strokeWidth( 5 );
+    mNanoVG->beginPath();
+    //mNanoVG->arc( 500, 500, r, -M_PI_2, fmodf(time, M_PI * 2.0f) - M_PI_2, NVG_CW );
+    mNanoVG->moveTo(20, 20);
+    int i =0;
+    for( ofVec2f point : mPoints ) {
+        mNanoVG->quadTo( point.x, point.y, mControlPoints[ i ].x, mControlPoints[ i ].y );
+        
+        i++;
+    }
     mNanoVG->stroke();
     mNanoVG->endFrame();
 }

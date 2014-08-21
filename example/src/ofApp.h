@@ -28,4 +28,6 @@ class ofApp : public ofBaseApp{
 protected:
     //std::shared_ptr<Context> mNanoVG;
     std::shared_ptr<ofx::nvg::Context> mNanoVG;
+    std::vector<ofVec2f> mPoints;
+    std::vector<ofVec2f> mControlPoints;
 };

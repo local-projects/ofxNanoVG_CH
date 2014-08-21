@@ -10,8 +10,8 @@ void ofApp::setup(){
     ofSetFrameRate( 60 );
     mNanoVG = std::shared_ptr<ofx::nvg::Context>( new ofx::nvg::Context( true, false ) );
     for( int i = 0; i < 100; i++ ) {
-        mPoints.push_back( ofVec2f( ofRandom( 1024 ), ofRandom( 768 ) ) );
-        mControlPoints.push_back( ofVec2f( ofRandom( 1024 ), ofRandom( 768 ) ) );
+        mPoints.push_back( ofVec2f( ofRandom( 450 ), ofRandom( 450 ) ) );
+        mControlPoints.push_back( ofVec2f( ofRandom( 450 ), ofRandom( 450 ) ) );
         cout << mPoints[ i ] << endl;
     }
 }
@@ -24,7 +24,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground( 0 );
-    mNanoVG->beginFrame(1024, 768, 1);
+    mNanoVG->beginFrame(450, 450, 1);
     mNanoVG->lineCap( 1 );
     mNanoVG->strokeColor( ofFloatColor( 1, 1, 1 , 1 ) );
     mNanoVG->strokeWidth( 5 );

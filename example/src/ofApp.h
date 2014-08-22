@@ -8,6 +8,7 @@ namespace ofx{
     }
 }
 
+class NVGLUframebuffer;
 
 class ofApp : public ofBaseApp{
 	public:
@@ -37,4 +38,6 @@ protected:
     std::vector<ofVec2f> bezierPoints;
     uint bezierPathCounter;
     uint drawnBezierPathsCounter;
+    
+    NVGLUframebuffer* fb;
 };

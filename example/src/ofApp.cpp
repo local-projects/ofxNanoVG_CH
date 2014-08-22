@@ -1,7 +1,7 @@
 #include "ofApp.h"
 #include <memory>
 #include "nanoVG.hpp"
-
+#include "nanovg_gl_utils.h"
 
 //using namespace ofx::nvg;
 
@@ -21,6 +21,19 @@ void ofApp::setup(){
     drawnBezierPathsCounter = 0;
     
     mNanoVG->resetScissor();
+    
+    fb = NULL;
+    fb = nvgluCreateFramebuffer(mNanoVG->get(), 450, 450);
+	if (fb == NULL) {
+		printf("Could not create FBO.\n");
+		return -1;
+	}
+    
+    nvgluBindFramebuffer(fb);
+    glViewport(0, 0, 450, 450);
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    nvgluBindFramebuffer(NULL);
 }
 
 //--------------------------------------------------------------
@@ -30,7 +43,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    nvgluBindFramebuffer(fb);
     mNanoVG->beginFrame(450, 450, 1);
     mNanoVG->beginPath();
     
@@ -47,10 +60,27 @@ void ofApp::draw(){
     mNanoVG->lineCap( 1 );
     mNanoVG->strokeColor( ofFloatColor( 1, 1, 1 ,1 ) );
     mNanoVG->strokeWidth( 5 );
-    //mNanoVG->fillColor( ofFloatColor( 1, 0, 0, 1 ) );
-    //mNanoVG->fill();
     mNanoVG->stroke();
     mNanoVG->endFrame();
+    nvgluBindFramebuffer(NULL);
+    
+    
+    ofClear(0);
+    ofSetColor( 255, 0, 0 );
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture( GL_TEXTURE_2D, fb->texture );
+    
+    glBegin( GL_QUADS );
+    
+    glTexCoord2f( 0.f, 0.f ); glVertex3i( 0, 0, 0 );
+    glTexCoord2f( 0.f, 1.f ); glVertex3i( 0, 450, 0 );
+    glTexCoord2f( 1.0f, 1.0f ); glVertex3i( 450, 450, 0 );
+    glTexCoord2f( 1, 0.f ); glVertex3i( 450, 0, 0 );
+    
+    glEnd();
+    
+    glBindTexture(GL_TEXTURE_2D, 0 );
+    glDisable( GL_TEXTURE_2D );
 }
 
 //--------------------------------------------------------------

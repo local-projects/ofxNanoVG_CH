@@ -72,10 +72,10 @@ void ofApp::draw(){
     
     glBegin( GL_QUADS );
     
-    glTexCoord2f( 0.f, 0.f ); glVertex3i( 0, 0, 0 );
-    glTexCoord2f( 0.f, 1.f ); glVertex3i( 0, 450, 0 );
-    glTexCoord2f( 1.0f, 1.0f ); glVertex3i( 450, 450, 0 );
-    glTexCoord2f( 1, 0.f ); glVertex3i( 450, 0, 0 );
+    glTexCoord2f( 0, 1 ); glVertex3i( 0, 0, 0 );
+    glTexCoord2f( 0, 0 ); glVertex3i( 0, 450, 0 );
+    glTexCoord2f( 1, 0 ); glVertex3i( 450, 450, 0 );
+    glTexCoord2f( 1, 1 ); glVertex3i( 450, 0, 0 );
     
     glEnd();
     

@@ -40,6 +40,10 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofClear(100);
+    ofSetColor( 0, 255, 255 );
+    for( ofVec2f point : mLine.getVertices() ) {
+        ofCircle( point.x, point.y, 6 );
+    }
     ofSetColor( 255, 255, 255 );
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, fb->texture );
@@ -60,11 +64,6 @@ void ofApp::draw(){
     
     ofSetColor( 0, 0, 255 );
     mLine.draw();
-    ofSetColor( 0, 255, 255 );
-    for( ofVec2f point : mLine.getVertices() ) {
-        ofCircle( point.x, point.y, 2 );
-    }
-    ofCircle(100, 100, 50);
 }
 
 //--------------------------------------------------------------
@@ -84,10 +83,10 @@ void ofApp::mouseMoved(int x, int y){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
     mLine.addVertex( x, y );
-    cout << mLine.size() << endl;
-    for( ofVec2f point : mLine.getVertices() ) {
+    //cout << mLine.size() << endl;
+    /*for( ofVec2f point : mLine.getVertices() ) {
         cout << "   " << point << endl;
-    }
+    }*/
     ctr++;
     pts[ctr] = ofVec2f( x, y );
     

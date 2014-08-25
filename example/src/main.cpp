@@ -7,7 +7,7 @@ int main( ){
 
 	//ofSetupOpenGL(1024,768, OF_WINDOW);			// <-------- setup the GL context
     ofAppGlutWindow win;
-    win.setGlutDisplayString("rgba alpha double stencil samples>=4");
+    //win.setGlutDisplayString("rgba alpha double stencil samples>=4");
     //win.setNumSamples( 0 );
     //win.setDoubleBuffering(false);
     //win.setOrientation(OF_ORIENTATION_90_LEFT);

@@ -15,19 +15,10 @@ void ofApp::setup(){
     mNanoVG->resetScissor();
     
     mCanvasSize = ofVec2f( 900, 900 );
-    
-    fb = NULL;
-    fb = nvgluCreateFramebuffer( mNanoVG->get(), mCanvasSize.x,  mCanvasSize.y );
-	if (fb == NULL) {
-		printf("Could not create FBO.\n");
-		return -1;
-	}
-    
-    nvgluBindFramebuffer( fb );
-    glViewport( 0, 0, mCanvasSize.x, mCanvasSize.y );
-	glClearColor( 0, 0, 0, 0 );
-	glClear( GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT );
-    nvgluBindFramebuffer( NULL );
+    mFbo.allocate( mCanvasSize.x, mCanvasSize.y );
+    mFbo.bind();
+    ofClear(0, 0, 0);
+    mFbo.unbind();
     
     mLine = ofPolyline();
 }
@@ -45,20 +36,8 @@ void ofApp::draw(){
         ofCircle( point.x, point.y, 6 );
     }
     ofSetColor( 255, 255, 255 );
-    glEnable( GL_TEXTURE_2D );
-    glBindTexture( GL_TEXTURE_2D, fb->texture );
     
-    glBegin( GL_QUADS );
-    
-    glTexCoord2f( 0, 1 ); glVertex3i( 0, 0, 0 );
-    glTexCoord2f( 0, 0 ); glVertex3i( 0, mCanvasSize.y, 0 );
-    glTexCoord2f( 1, 0 ); glVertex3i( mCanvasSize.x, mCanvasSize.y, 0 );
-    glTexCoord2f( 1, 1 ); glVertex3i( mCanvasSize.x, 0, 0 );
-    
-    glEnd();
-    
-    glBindTexture(GL_TEXTURE_2D, 0 );
-    glDisable( GL_TEXTURE_2D );
+    mFbo.draw( 0, mCanvasSize.y, mCanvasSize.x, - mCanvasSize.y );
     
     glViewport( 0, 0, mCanvasSize.x, mCanvasSize.y );
     
@@ -97,7 +76,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         // move the endpoint to the middle of the line joining the second control point
         // of the first Bezier segment and the first control point of the second Bezier segment
         
-        nvgluBindFramebuffer( fb );
+        mFbo.bind();
         mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
         mNanoVG->beginPath();
         
@@ -120,7 +99,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         mNanoVG->stroke();
         
         mNanoVG->endFrame();
-        nvgluBindFramebuffer(NULL);
+        mFbo.unbind();
         
         //[self setNeedsDisplay];
         // replace points and get ready to handle the next segment
@@ -128,7 +107,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         pts[1] = pts[4];
         ctr = 1;
     } else {
-        nvgluBindFramebuffer( fb );
+        mFbo.bind();
         mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
         mNanoVG->beginPath();
         
@@ -139,7 +118,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         mNanoVG->stroke();
         mNanoVG->endFrame();
         
-        nvgluBindFramebuffer(NULL);
+        mFbo.unbind();
     }
 }
 

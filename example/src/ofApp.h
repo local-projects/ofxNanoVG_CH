@@ -36,7 +36,8 @@ protected:
     ofVec2f pts[5]; // we now need to keep track of the four points of a Bezier segment and the first control point of the next segment
     uint ctr;
     
-    NVGLUframebuffer* fb;
+    //NVGLUframebuffer* fb;
+    ofFbo mFbo;
     
     ofPolyline mLine;
 };

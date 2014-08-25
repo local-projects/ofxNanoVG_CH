@@ -14,7 +14,7 @@ int main( ){
     //win.setMultiDisplayFullscreen(true);
     //win.set
     
-    ofSetupOpenGL( &win, 450, 450, OF_WINDOW );// <-------- setup the GL context
+    ofSetupOpenGL( &win, 900, 900, OF_WINDOW );// <-------- setup the GL context
     //ofSetupOpenGL(450,450, OF_WINDOW);
     
 	// this kicks off the running of my app

@@ -154,6 +154,9 @@ void ofApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
     mPositionCount = 0;
+    mFbo.bind();
+    mTempFbo.draw( 0, mCanvasSize.y, mCanvasSize.x, - mCanvasSize.y );
+    mFbo.unbind();
 }
 
 //--------------------------------------------------------------

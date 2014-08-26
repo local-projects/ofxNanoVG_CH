@@ -1,9 +1,6 @@
 #include "ofApp.h"
 #include <memory>
 #include "nanoVG.hpp"
-#include "nanovg_gl_utils.h"
-
-//using namespace ofx::nvg;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -11,16 +8,17 @@ void ofApp::setup(){
     ofSetBackgroundAuto( false );
     ofBackground(0);
     mNanoVG = std::shared_ptr<ofx::nvg::Context>( new ofx::nvg::Context( true, false ) );
-    
-    mNanoVG->resetScissor();
-    
     mCanvasSize = ofVec2f( 900, 900 );
+    
     mFbo.allocate( mCanvasSize.x, mCanvasSize.y );
     mFbo.bind();
     ofClear(0, 0, 0);
     mFbo.unbind();
     
-    mLine = ofPolyline();
+    mTempFbo.allocate( mCanvasSize.x, mCanvasSize.y );
+    mTempFbo.bind();
+    ofClear(0, 0, 0);
+    mTempFbo.unbind();
 }
 
 //--------------------------------------------------------------
@@ -38,6 +36,7 @@ void ofApp::draw(){
     ofSetColor( 255, 255, 255 );
     
     mFbo.draw( 0, mCanvasSize.y, mCanvasSize.x, - mCanvasSize.y );
+    mTempFbo.draw( 0, mCanvasSize.y, mCanvasSize.x, - mCanvasSize.y );
     
     glViewport( 0, 0, mCanvasSize.x, mCanvasSize.y );
     
@@ -65,10 +64,40 @@ void ofApp::mouseDragged(int x, int y, int button){
     mPositionCount++;
     mBezier[ mPositionCount ] = ofVec2f( x, y );
     
-    if ( mPositionCount == 4 )
+    if ( mPositionCount != 4 )
     {
+        cout << "mPositionCount: " << mPositionCount << endl;
+        mFbo.bind();
+        mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
+        mNanoVG->beginPath();
+        
+        mNanoVG->circle( x, y, 2 );
+        
+        mNanoVG->strokeColor( ofFloatColor( 1, 0, 0, 1 ) );
+        mNanoVG->strokeWidth( 4 );
+        mNanoVG->stroke();
+        mNanoVG->endFrame();
+        
+        mFbo.unbind();
+        
+        mTempFbo.bind();
+        mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
+        mNanoVG->beginPath();
+        
+        mNanoVG->moveTo( mBezier[ 0 ] );
+        for( int i = 1; i < mPositionCount + 1; i++ ) {
+            mNanoVG->lineTo( mBezier[ i ] );
+        }
+        mNanoVG->lineCap( 1 );
+        mNanoVG->strokeColor( ofFloatColor( 0, 1, 0 ,1 ) );
+        mNanoVG->strokeWidth( 5 );
+        mNanoVG->stroke();
+        mNanoVG->endFrame();
+        mTempFbo.unbind();
+    } else {
+        
         mBezier[ 3 ] = ofVec2f( ( mBezier[ 2 ].x + mBezier[ 4 ].x ) / 2.0,
-                                ( mBezier[ 2 ].y + mBezier[ 4 ].y) / 2.0 );
+                               ( mBezier[ 2 ].y + mBezier[ 4 ].y) / 2.0 );
         // move the endpoint to the middle of the line joining the second control point
         // of the first Bezier segment and the first control point of the second Bezier segment
         
@@ -78,8 +107,8 @@ void ofApp::mouseDragged(int x, int y, int button){
         
         mNanoVG->moveTo(    mBezier[ 0 ] );
         mNanoVG->bezierTo(  mBezier[ 1 ],
-                            mBezier[ 2 ],
-                            mBezier[ 3 ]);
+                          mBezier[ 2 ],
+                          mBezier[ 3 ]);
         
         mNanoVG->lineCap( 1 );
         mNanoVG->strokeColor( ofFloatColor( 1, 1, 1 ,1 ) );
@@ -101,19 +130,23 @@ void ofApp::mouseDragged(int x, int y, int button){
         mBezier[ 0 ] = mBezier[ 3 ];
         mBezier[ 1 ] = mBezier[ 4 ];
         mPositionCount = 1;
-    } else {
-        mFbo.bind();
+        
+        mTempFbo.bind();
+        cout << "CLEAR!     " << "mPositionCount: " << mPositionCount << endl;
+        ofClear(0, 0, 0);
+        
         mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
         mNanoVG->beginPath();
         
-        mNanoVG->circle( x, y, 2 );
-        
-        mNanoVG->strokeColor( ofFloatColor( 1, 0, 0, 1 ) );
-        mNanoVG->strokeWidth( 4 );
+        mNanoVG->moveTo( mBezier[ 0 ] );
+        mNanoVG->lineTo( mBezier[ 1 ] );
+        mNanoVG->lineCap( 1 );
+        mNanoVG->strokeColor( ofFloatColor( 1, 1, 0 , 1 ) );
+        mNanoVG->strokeWidth( 5 );
         mNanoVG->stroke();
         mNanoVG->endFrame();
         
-        mFbo.unbind();
+        mTempFbo.unbind();
     }
 }
 

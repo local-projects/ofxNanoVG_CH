@@ -148,6 +148,7 @@ void ofApp::mousePressed(int x, int y, int button){
     mPositionCount = 0;
     mBezier[ 0 ] = ofVec2f( x, y );
     
+    mLine.clear();
     mLine.addVertex( x, y );
 }
 

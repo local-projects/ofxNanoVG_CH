@@ -27,7 +27,14 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
 protected:
+    void clear() { ofClear(0, 0, 0, 0); };
     void stroke( int cap, ofFloatColor color, int width );
+    
+    ofColor red;
+    ofColor green;
+    ofColor white;
+    ofColor cyan;
+    ofColor blue;
     
     std::shared_ptr<ofx::nvg::Context> mNanoVG;
     ofVec2f mCanvasSize;

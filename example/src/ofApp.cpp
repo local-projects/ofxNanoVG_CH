@@ -2,6 +2,8 @@
 #include <memory>
 #include "nanoVG.hpp"
 
+#define DEBUG 0
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate( 60 );
@@ -10,14 +12,20 @@ void ofApp::setup(){
     mNanoVG = std::shared_ptr<ofx::nvg::Context>( new ofx::nvg::Context( true, false ) );
     mCanvasSize = ofVec2f( 900, 900 );
     
+    red = ofFloatColor( 1, 0, 0, 1 );
+    green = ofFloatColor( 0, 1, 0, 1 );
+    white = ofFloatColor( 1, 1, 1, 1 );
+    cyan = ofFloatColor( 0, 1, 1, 1 );
+    blue = ofFloatColor( 0, 0, 1, 1 );
+    
     mFbo.allocate( mCanvasSize.x, mCanvasSize.y );
     mFbo.bind();
-    ofClear(0, 0, 0);
+    clear();
     mFbo.unbind();
     
     mTempFbo.allocate( mCanvasSize.x, mCanvasSize.y );
     mTempFbo.bind();
-    ofClear(0, 0, 0);
+    clear();
     mTempFbo.unbind();
 }
 
@@ -29,19 +37,19 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofClear(100);
-    ofSetColor( 0, 255, 255 );
+    ofSetColor( cyan );
     for( ofVec2f point : mLine.getVertices() ) {
         ofCircle( point.x, point.y, 6 );
     }
-    ofSetColor( 255, 255, 255 );
+    ofSetColor( white );
     
     mFbo.draw( 0, mCanvasSize.y, mCanvasSize.x, - mCanvasSize.y );
     mTempFbo.draw( 0, mCanvasSize.y, mCanvasSize.x, - mCanvasSize.y );
     
-    glViewport( 0, 0, mCanvasSize.x, mCanvasSize.y );
-    
-    ofSetColor( 0, 0, 255 );
-    mLine.draw();
+    if( DEBUG ) {
+        ofSetColor( blue );
+        mLine.draw();
+    }
 }
 
 //--------------------------------------------------------------
@@ -60,24 +68,30 @@ void ofApp::mouseMoved(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    mLine.addVertex( x, y );
+    if( DEBUG ) {
+        mLine.addVertex( x, y );
+    }
     mPositionCount++;
     mBezier[ mPositionCount ] = ofVec2f( x, y );
     
     if ( mPositionCount != 4 )
     {
-        cout << "mPositionCount: " << mPositionCount << endl;
-        mFbo.bind();
-        mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
-        mNanoVG->beginPath();
-        
-        mNanoVG->circle( x, y, 2 );
-        stroke(1, ofFloatColor( 1, 0, 0, 1 ), 4);
-        mNanoVG->endFrame();
-        
-        mFbo.unbind();
+        if( DEBUG ) {
+            cout << "mPositionCount: " << mPositionCount << endl;
+            mFbo.bind();
+            mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
+            mNanoVG->beginPath();
+            
+            mNanoVG->circle( x, y, 2 );
+            stroke(1, red, 4);
+            mNanoVG->endFrame();
+            
+            mFbo.unbind();
+        }
         
         mTempFbo.bind();
+        clear();
+        ofSetColor( white );
         mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
         mNanoVG->beginPath();
         
@@ -85,7 +99,11 @@ void ofApp::mouseDragged(int x, int y, int button){
         for( int i = 1; i < mPositionCount + 1; i++ ) {
             mNanoVG->lineTo( mBezier[ i ] );
         }
-        stroke(1, ofFloatColor( 0, 1, 0, 1 ), 5);
+        if( DEBUG ) {
+            stroke( 1, green, 5 );
+        } else {
+            stroke( 1, white, 5 );
+        }
         mNanoVG->endFrame();
         mTempFbo.unbind();
     } else {
@@ -101,34 +119,38 @@ void ofApp::mouseDragged(int x, int y, int button){
         
         mNanoVG->moveTo(    mBezier[ 0 ] );
         mNanoVG->bezierTo(  mBezier[ 1 ],
-                          mBezier[ 2 ],
-                          mBezier[ 3 ]);
+                            mBezier[ 2 ],
+                            mBezier[ 3 ]);
         
-        stroke(1, ofFloatColor( 1, 1, 1, 1 ), 5);
+        stroke(1, white, 5);
         
-        mNanoVG->beginPath();
-        mNanoVG->circle( x, y, 2 );
-        stroke(1, ofFloatColor( 1, 0, 0, 1 ), 4);
+        if( DEBUG ) {
+            mNanoVG->beginPath();
+            mNanoVG->circle( x, y, 2 );
+            stroke( 1, red, 4 );
+        }
         
         mNanoVG->endFrame();
         mFbo.unbind();
         
-        //[self setNeedsDisplay];
         // replace points and get ready to handle the next segment
         mBezier[ 0 ] = mBezier[ 3 ];
         mBezier[ 1 ] = mBezier[ 4 ];
         mPositionCount = 1;
         
         mTempFbo.bind();
-        cout << "CLEAR!     " << "mPositionCount: " << mPositionCount << endl;
-        ofClear(0, 0, 0);
+        clear();
+        ofSetColor( white );
+        if( DEBUG ) {
+            cout << "CLEAR!     " << "mPositionCount: " << mPositionCount << endl;
+        }
         
         mNanoVG->beginFrame( mCanvasSize.x, mCanvasSize.y, 1 );
         mNanoVG->beginPath();
         
         mNanoVG->moveTo( mBezier[ 0 ] );
         mNanoVG->lineTo( mBezier[ 1 ] );
-        stroke(1, ofFloatColor( 1, 1, 0, 1 ), 5);
+        stroke(1, white, 5);
         mNanoVG->endFrame();
         
         mTempFbo.unbind();
@@ -148,14 +170,17 @@ void ofApp::mousePressed(int x, int y, int button){
     mPositionCount = 0;
     mBezier[ 0 ] = ofVec2f( x, y );
     
-    mLine.clear();
-    mLine.addVertex( x, y );
+    if( DEBUG ) {
+        mLine.clear();
+        mLine.addVertex( x, y );
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
     mPositionCount = 0;
     mFbo.bind();
+    ofSetColor( white );
     mTempFbo.draw( 0, mCanvasSize.y, mCanvasSize.x, - mCanvasSize.y );
     mFbo.unbind();
 }

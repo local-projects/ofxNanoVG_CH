@@ -72,10 +72,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         mNanoVG->beginPath();
         
         mNanoVG->circle( x, y, 2 );
-        
-        mNanoVG->strokeColor( ofFloatColor( 1, 0, 0, 1 ) );
-        mNanoVG->strokeWidth( 4 );
-        mNanoVG->stroke();
+        stroke(1, ofFloatColor( 1, 0, 0, 1 ), 4);
         mNanoVG->endFrame();
         
         mFbo.unbind();
@@ -88,10 +85,7 @@ void ofApp::mouseDragged(int x, int y, int button){
         for( int i = 1; i < mPositionCount + 1; i++ ) {
             mNanoVG->lineTo( mBezier[ i ] );
         }
-        mNanoVG->lineCap( 1 );
-        mNanoVG->strokeColor( ofFloatColor( 0, 1, 0 ,1 ) );
-        mNanoVG->strokeWidth( 5 );
-        mNanoVG->stroke();
+        stroke(1, ofFloatColor( 0, 1, 0, 1 ), 5);
         mNanoVG->endFrame();
         mTempFbo.unbind();
     } else {
@@ -110,17 +104,11 @@ void ofApp::mouseDragged(int x, int y, int button){
                           mBezier[ 2 ],
                           mBezier[ 3 ]);
         
-        mNanoVG->lineCap( 1 );
-        mNanoVG->strokeColor( ofFloatColor( 1, 1, 1 ,1 ) );
-        mNanoVG->strokeWidth( 5 );
-        mNanoVG->stroke();
+        stroke(1, ofFloatColor( 1, 1, 1, 1 ), 5);
         
         mNanoVG->beginPath();
         mNanoVG->circle( x, y, 2 );
-        
-        mNanoVG->strokeColor( ofFloatColor( 1, 0, 0, 1 ) );
-        mNanoVG->strokeWidth( 4 );
-        mNanoVG->stroke();
+        stroke(1, ofFloatColor( 1, 0, 0, 1 ), 4);
         
         mNanoVG->endFrame();
         mFbo.unbind();
@@ -140,14 +128,19 @@ void ofApp::mouseDragged(int x, int y, int button){
         
         mNanoVG->moveTo( mBezier[ 0 ] );
         mNanoVG->lineTo( mBezier[ 1 ] );
-        mNanoVG->lineCap( 1 );
-        mNanoVG->strokeColor( ofFloatColor( 1, 1, 0 , 1 ) );
-        mNanoVG->strokeWidth( 5 );
-        mNanoVG->stroke();
+        stroke(1, ofFloatColor( 1, 1, 0, 1 ), 5);
         mNanoVG->endFrame();
         
         mTempFbo.unbind();
     }
+}
+
+void ofApp::stroke( int cap, ofFloatColor color, int width )
+{
+    mNanoVG->lineCap( cap );
+    mNanoVG->strokeColor( color );
+    mNanoVG->strokeWidth( width );
+    mNanoVG->stroke();
 }
 
 //--------------------------------------------------------------

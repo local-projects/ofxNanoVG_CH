@@ -17,11 +17,8 @@ namespace ofx { namespace nvg {
             int flags = (antiAlias ? NVG_ANTIALIAS : 0 ) |
                         (stencilStrokes ? NVG_STENCIL_STROKES : 0 );
         
-            //mCtx = std::make_shared<NVGcontext>( nvgCreateGL2( flags ) );
-            cout << "creating gl 2 context" << endl;
             mCtx = std::shared_ptr<NVGcontext>( nvgCreateGL2( flags ) );
             
-            cout << "mCtx" << mCtx << endl;
         }
         
         ~Context()

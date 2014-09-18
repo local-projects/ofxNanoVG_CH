@@ -117,8 +117,8 @@ namespace ofx { namespace nvg {
             return nvgRadialGradient(get(), cx, cy, inr, outr, icol, ocol);
         }
         inline NVGpaint imagePattern(float ox, float oy, float ex, float ey,
-                                     float angle, int image, int repeat, float alpha) {
-            return nvgImagePattern(get(), ox, oy, ex, ey, angle, image, repeat, alpha);
+                                     float angle, int image, float alpha) {
+            return nvgImagePattern(get(), ox, oy, ex, ey, angle, image, alpha);
         }
         
         // Scissoring //
@@ -195,7 +195,8 @@ namespace ofx { namespace nvg {
         
         void polyLine(const ofPolyline& polyline) {
 			vector<ofPoint> verts = polyline.getVertices();
-			for (int i=0; i<verts.size(); i++) {
+			nvgMoveTo(get(), verts[0].x, verts[0].y);
+			for (int i=1; i<verts.size(); i++) {
 				nvgLineTo(get(), verts[i].x, verts[i].y);
 			}
 		}

@@ -193,7 +193,12 @@ namespace ofx { namespace nvg {
         
         // openFrameworks Types //
         
-        void polyLine(const ofPolyline& polyline);
+        void polyLine(const ofPolyline& polyline) {
+			vector<ofPoint> verts = polyline.getVertices();
+			for (int i=0; i<verts.size(); i++) {
+				nvgLineTo(get(), verts[i].x, verts[i].y);
+			}
+		}
         //void shape2d(const Shape2d& shape);
         
     private:

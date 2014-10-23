@@ -194,7 +194,7 @@ namespace ofx { namespace nvg {
         // openFrameworks Types //
         
         void polyLine(const ofPolyline& polyline) {
-			vector<ofPoint> verts = polyline.getVertices();
+			vector<ofVec3f> & verts = (vector<ofVec3f> &)polyline.getVertices();
 			nvgMoveTo(get(), verts[0].x, verts[0].y);
 			for (int i=1; i<verts.size(); i++) {
 				nvgLineTo(get(), verts[i].x, verts[i].y);

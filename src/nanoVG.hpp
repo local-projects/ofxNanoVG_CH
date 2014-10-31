@@ -167,7 +167,7 @@ namespace ofx { namespace nvg {
             nvgRect(get(), x, y, w, h);
         }
         inline void rect(const ofVec4f& r) {
-            rect(r[0], r[2], r[3], r[4]);
+            rect(r[0], r[1], r[2], r[3]);
         }
         inline void roundedRect(float x, float y, float w, float h, float r) {
             nvgRoundedRect(get(), x, y, w, h, r);
